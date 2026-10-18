@@ -48,7 +48,7 @@ body{
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
   background-size:20px 20px;
 }
-.wrap{max-width:1320px;margin:0 auto;padding-block:20px 48px;
+.wrap{max-width:1680px;margin:0 auto;padding-block:20px 48px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   display:flex;flex-direction:column;gap:20px}
 h1,h2,h3{font-family:var(--f-display);font-weight:600;letter-spacing:.01em;margin:0;text-wrap:balance}
@@ -96,8 +96,9 @@ button,input,select,textarea{font:inherit;color:inherit}
   .titleblock h1{font-size:1.6rem}
 }
 
-.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
-@media (max-width:1080px){.main{grid-template-columns:minmax(0,1fr)}.side{order:-1}}
+.main{display:grid;grid-template-columns:360px minmax(0,1fr);grid-template-areas:"week week" "side todo";gap:20px;align-items:start}
+.main>.week-panel{grid-area:week}.main>.side{grid-area:side}.main>.todo-panel{grid-area:todo}
+@media (max-width:1080px){.main{grid-template-columns:minmax(0,1fr);grid-template-areas:"side" "week" "todo"}}
 .panel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .side{display:flex;flex-direction:column;gap:20px;min-width:0}
@@ -291,7 +292,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
   </header>
 
   <div class="main">
-    <section class="panel" aria-labelledby="hWeek">
+    <section class="panel week-panel" aria-labelledby="hWeek">
       <div class="panel-head">
         <h2 id="hWeek">Wochenplan</h2>
         <div class="weeknav">
@@ -339,15 +340,15 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       </section>
 
     </aside>
-  </div>
 
-  <section class="panel" aria-labelledby="hCp">
+  <section class="panel todo-panel" aria-labelledby="hCp">
     <div class="panel-head">
       <h2 id="hCp">To Do</h2>
       <span class="label" id="tdTotal">Offene Aufgaben pro Fach</span>
     </div>
     <div class="todos" id="todos"></div>
   </section>
+  </div>
   <section class="panel" aria-labelledby="hStats">
     <h2 id="hStats">Statistik</h2>
     <div class="stats-grid">
