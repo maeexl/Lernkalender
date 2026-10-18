@@ -96,7 +96,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   .titleblock h1{font-size:1.6rem}
 }
 
-.main{display:grid;grid-template-columns:360px minmax(0,1fr);grid-template-areas:"week week" "side todo";gap:20px;align-items:start}
+.main{display:grid;grid-template-columns:360px minmax(0,1fr);grid-template-areas:"side todo" "week week";gap:20px;align-items:start}
 .main>.week-panel{grid-area:week}.main>.side{grid-area:side}.main>.todo-panel{grid-area:todo}
 @media (max-width:1080px){.main{grid-template-columns:minmax(0,1fr);grid-template-areas:"side" "week" "todo"}}
 .panel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
