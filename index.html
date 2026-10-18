@@ -532,7 +532,21 @@ async function getToken(){
   if(auth&&auth.refresh){try{await tokenReq({grant_type:'refresh_token',refresh_token:auth.refresh});return auth.access}catch(e){}}
   throw Object.assign(new Error('Anmeldung nötig'),{code:'login'});
 }
-function logout(){lsDel(TK);auth=null;showLogin(true)}
+/* Abmelden: erst offene Änderungen nach OneDrive schicken, dann Anmeldung UND lokale Kopie löschen */
+let logoutArm=0;
+async function logout(){
+  const btn=$('logoutBtn');
+  if(pending&&auth){btn.textContent='Speichere …';await sync()}
+  if(pending&&Date.now()-logoutArm>4000){
+    logoutArm=Date.now();btn.textContent='Nicht gespeichert – trotzdem abmelden?';
+    setTimeout(()=>{btn.textContent='Abmelden'},4000);return;
+  }
+  for(const k of [TK,PK,LS,LS+'-etag',LS+'-pending'])lsDel(k);
+  auth=null;pending=false;remoteEtag=null;dirtyGen=0;
+  applyDoc({v:1});render();
+  btn.textContent='Abmelden';setSync('login');showLogin(true);
+  toast('Abgemeldet – die Daten auf diesem Gerät wurden gelöscht');
+}
 
 /* ---------- OneDrive ---------- */
 async function gfetch(url,opt={}){
