@@ -236,7 +236,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .td-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .td-count{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
 .td ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.td li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:8px;align-items:start;padding:4px 2px;border-radius:4px}
+.td li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;gap:8px;align-items:start;padding:4px 2px;border-radius:4px}
 .td li:hover{background:var(--paper)}
 .td li input{margin-top:3px;accent-color:var(--fc);width:16px;height:16px;cursor:pointer}
 .td li label{font-size:.9rem;overflow-wrap:break-word;-webkit-hyphens:auto;hyphens:auto;cursor:pointer}
@@ -249,6 +249,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .td ul{min-height:28px}
 .td-del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;border-radius:3px}
 .td-del:hover{color:var(--danger)}
+.td-edit{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:.85rem;line-height:1;padding:3px 4px;border-radius:3px;opacity:.55}
+.td li:hover .td-edit,.td-edit:focus-visible{opacity:1}
+.td-edit:hover{color:var(--accent)}
+@media (hover:none){.td-edit,.td-grip{opacity:.8}}
+.td-editin{width:100%;min-width:0;font:inherit;font-size:.9rem;border:1px solid var(--fc);background:var(--paper);border-radius:4px;padding:3px 6px;color:var(--ink)}
 .td-empty{font-size:.85rem;color:var(--muted);font-style:italic}
 .td-add{display:flex;gap:6px}
 .td-add input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:6px 9px}
@@ -717,15 +722,15 @@ function render(){
 
   /* To Do */
   let open=0;
-  if(!dragging)for(const f of FAECHER){
+  if(!dragging&&!editingTodo)for(const f of FAECHER){
     const items=Object.entries(state.todos).filter(([,t])=>t.fach===f.k)
       .sort((x,y)=>(!!x[1].done-!!y[1].done)||((x[1].order??x[1].createdAt??0)-(y[1].order??y[1].createdAt??0)));
     const n=items.filter(([,t])=>!t.done).length;open+=n;
     $('tdc-'+f.k).textContent=items.length?`${n} offen`:'';
-    $('tdl-'+f.k).innerHTML=items.length?items.map(([id,t])=>`<li class="${t.done?'done':''}" data-id="${esc(id)}"><button class="td-grip" type="button" aria-label="Verschieben" title="Ziehen zum Verschieben">⠿</button><input type="checkbox" id="td-${esc(id)}" data-id="${esc(id)}" ${t.done?'checked':''}><label for="td-${esc(id)}">${esc(t.text)}</label><button class="td-del" data-del="${esc(id)}" aria-label="Aufgabe löschen" title="Löschen">×</button></li>`).join('')
+    $('tdl-'+f.k).innerHTML=items.length?items.map(([id,t])=>`<li class="${t.done?'done':''}" data-id="${esc(id)}"><button class="td-grip" type="button" aria-label="Verschieben" title="Ziehen zum Verschieben">⠿</button><input type="checkbox" id="td-${esc(id)}" data-id="${esc(id)}" ${t.done?'checked':''}><label for="td-${esc(id)}">${esc(t.text)}</label><button class="td-edit" type="button" data-edit="${esc(id)}" aria-label="Aufgabe bearbeiten" title="Bearbeiten">✎</button><button class="td-del" data-del="${esc(id)}" aria-label="Aufgabe löschen" title="Löschen">×</button></li>`).join('')
       :'';
   }
-  if(dragging)open=Object.values(state.todos).filter(t=>!t.done).length;
+  if(dragging||editingTodo)open=Object.values(state.todos).filter(t=>!t.done).length;
   $('tdTotal').textContent=open?`${open} offene Aufgaben`:'Alles erledigt';
   renderTimer();
 }
@@ -921,9 +926,28 @@ $('todos').addEventListener('change',e=>{
   safe(put('todos',cb.dataset.id,{...t,done:cb.checked,doneAt:cb.checked?iso(new Date()):null}));
 });
 $('todos').addEventListener('click',e=>{
+  const ed=e.target.closest('[data-edit]');if(ed){startEditTodo(ed.dataset.edit);return}
   const d=e.target.closest('[data-del]');if(!d)return;
   safe(remove('todos',d.dataset.del),'Aufgabe gelöscht');
 });
+/* Aufgabe nachträglich bearbeiten: Text wird zum Eingabefeld; Enter oder Wegklicken speichert, Esc bricht ab */
+let editingTodo=null;
+function startEditTodo(id){
+  if(editingTodo)return;
+  const li=document.querySelector(`#todos li[data-id="${CSS.escape(id)}"]`);const t=state.todos[id];if(!li||!t)return;
+  editingTodo=id;
+  const lab=li.querySelector('label');const inp=document.createElement('input');
+  inp.className='td-editin';inp.value=t.text;inp.setAttribute('aria-label','Aufgabe bearbeiten');
+  lab.replaceWith(inp);li.querySelector('.td-edit').hidden=true;inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);
+  let done=false;
+  const finish=save=>{
+    if(done)return;done=true;editingTodo=null;
+    const txt=inp.value.trim();const cur=state.todos[id];
+    if(save&&cur&&txt&&txt!==cur.text)safe(put('todos',id,{...cur,text:txt}),'Aufgabe geändert');else render();
+  };
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();finish(true)}else if(e.key==='Escape'){finish(false)}});
+  inp.addEventListener('blur',()=>finish(true));
+}
 
 /* ---------- Start ---------- */
 $('goalEdit').onclick=()=>{const f=$('goalForm');f.hidden=!f.hidden;if(!f.hidden){$('goalIn').value=String((+(state.settings.goalMin)||1080)/60);$('goalIn').focus()}};
