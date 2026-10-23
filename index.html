@@ -253,7 +253,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .td li:hover .td-edit,.td-edit:focus-visible{opacity:1}
 .td-edit:hover{color:var(--accent)}
 @media (hover:none){.td-edit,.td-grip{opacity:.8}}
-.td-editin{width:100%;min-width:0;font:inherit;font-size:.9rem;border:1px solid var(--fc);background:var(--paper);border-radius:4px;padding:3px 6px;color:var(--ink)}
+.td-editin{display:block;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:2px;background:transparent;color:var(--ink);
+  font:inherit;font-size:.9rem;line-height:inherit;resize:none;overflow:hidden;overflow-wrap:break-word;
+  outline:1.5px solid var(--fc);outline-offset:2px}
 .td-empty{font-size:.85rem;color:var(--muted);font-style:italic}
 .td-add{display:flex;gap:6px}
 .td-add input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:6px 9px}
@@ -936,9 +938,10 @@ function startEditTodo(id){
   if(editingTodo)return;
   const li=document.querySelector(`#todos li[data-id="${CSS.escape(id)}"]`);const t=state.todos[id];if(!li||!t)return;
   editingTodo=id;
-  const lab=li.querySelector('label');const inp=document.createElement('input');
+  const lab=li.querySelector('label');const inp=document.createElement('textarea');inp.rows=1;
   inp.className='td-editin';inp.value=t.text;inp.setAttribute('aria-label','Aufgabe bearbeiten');
-  lab.replaceWith(inp);li.querySelector('.td-edit').hidden=true;inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);
+  const fit=()=>{inp.style.height='auto';inp.style.height=inp.scrollHeight+'px'};
+  lab.replaceWith(inp);fit();inp.addEventListener('input',fit);li.querySelector('.td-edit').hidden=true;inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);
   let done=false;
   const finish=save=>{
     if(done)return;done=true;editingTodo=null;
