@@ -151,6 +151,22 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* Timer */
 .timer-face{font-family:var(--f-mono);font-size:2.6rem;font-weight:500;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+.art-seg{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.art-seg button{flex:1;border:0;background:var(--paper);color:var(--muted);font:inherit;font-size:.85rem;font-weight:600;padding:7px 4px;cursor:pointer;border-left:1px solid var(--line)}
+.art-seg button:first-child{border-left:0}
+.art-seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.art-seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.art-tag{font-size:.72rem;font-weight:600;letter-spacing:.03em;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-left:4px;white-space:nowrap}
+.bar-track{display:flex}
+.bar-seg{height:100%}
+.bar-seg.a-stoff{background:var(--fc)}
+.bar-seg.a-uebung{background:color-mix(in srgb,var(--fc) 58%,var(--paper))}
+.bar-seg.a-wdh{background:color-mix(in srgb,var(--fc) 28%,var(--paper))}
+.bar-seg.a-ohne{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--fc) 35%,var(--paper)) 0 3px,var(--paper) 3px 6px)}
+.bar-split{grid-column:2/-1;font-size:.74rem;color:var(--muted);margin-top:-4px;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.art-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.76rem;color:var(--muted)}
+.art-legend span{display:inline-flex;align-items:center;gap:6px}
+.art-legend i{width:16px;height:9px;border-radius:2px;display:inline-block;--fc:var(--ink)}
 .timer-sub{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .timer-top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
 .timer-main{display:flex;flex-direction:column;gap:4px}
@@ -342,6 +358,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
           <div class="field"><span class="label" id="tFachLbl">Fach</span><input type="hidden" id="tFach" value="physik">
             <div class="fpick" id="tFachPick"><button type="button" class="fpick-btn" id="tFachBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tFachLbl tFachBtn"></button><ul class="fpick-list" id="tFachList" role="listbox" aria-labelledby="tFachLbl" hidden></ul></div></div>
           <div class="field"><label class="label" for="tThema">Thema</label><input id="tThema" placeholder="z. B. Schnittgrößen"></div>
+          <div class="field full"><span class="label" id="tArtLbl">Lernart</span><div class="art-seg" id="tArt" role="group" aria-labelledby="tArtLbl"></div></div>
         </div>
         <div class="btn-row">
           <button class="btn primary" id="tStartBtn">Start</button>
@@ -368,6 +385,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       <div class="stat-block">
         <div class="label" id="statWeekLbl">Netto pro Fach</div>
         <div class="bars" id="fachBars"></div>
+        <div class="art-legend" id="artLegend"></div>
       </div>
       <div class="stat-block">
         <div class="label">Netto der letzten 8 Wochen (h)</div>
@@ -400,6 +418,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       <div class="field sOnly"><label class="label" for="fEnd">Ende</label><input type="time" id="fEnd"></div>
       <div class="field sOnly"><label class="label" for="fPause">Pause (min)</label><input type="number" id="fPause" min="0" step="5" value="0" inputmode="numeric"></div>
       <div class="field pOnly" hidden><label class="label" for="fDauer">Dauer (min)</label><input type="number" id="fDauer" min="5" step="5" value="60" inputmode="numeric"></div>
+      <div class="field full sOnly"><label class="label" for="fArt">Lernart</label><select id="fArt"></select></div>
       <div class="field full"><label class="label" for="fThema">Thema</label><input id="fThema" placeholder="z. B. Merkbuch 9.2, Bruchintegrale"></div>
     </div>
     <div class="calc sOnly" id="calc">Netto: <b>–</b></div>
@@ -432,6 +451,20 @@ const FAECHER=[
   {k:'physik',n:'Physik',a:'PH'},{k:'tm',n:'Techn. Mechanik',a:'TM'},{k:'mathe',n:'Mathematik',a:'MA'},
   {k:'et',n:'Elektrotechnik',a:'ET'},{k:'wt',n:'Werkstofftechnologie',a:'WT'},{k:'wa',n:'Wissenschaftliches Arbeiten',a:'WA'},{k:'sw',n:'SolidWorks / CAD',a:'CAD'},{k:'sonst',n:'Sonstiges',a:'SO'}];
 const F=Object.fromEntries(FAECHER.map(f=>[f.k,f]));
+const ARTEN=[{k:'stoff',n:'Neuer Stoff',s:'Stoff'},{k:'uebung',n:'Übung',s:'Übung'},{k:'wdh',n:'Wiederholung',s:'Wdh.'}];
+const ART=Object.fromEntries(ARTEN.map(a=>[a.k,a]));
+const artName=k=>ART[k]?ART[k].s:'ohne Angabe';
+/* Lernart einer Etappe einer laufenden Session: gilt bis zur nächsten Änderung weiter */
+function artOfEtappe(l,i){const a=l.etArt||[];for(let j=i;j>=0;j--)if(a[j])return a[j];return l.art||'stoff'}
+/* Netto-Minuten einer gespeicherten Session nach Lernart */
+function artSplit(x){
+  const tot=netOf(x);const out={};
+  if(Array.isArray(x.etappen)&&x.etappen.length>1){
+    let sum=0;for(const e of x.etappen){const m=e.net??netOf(e);const k=ART[e.art]?e.art:(ART[x.art]?x.art:'ohne');out[k]=(out[k]||0)+m;sum+=m}
+    if(sum>0&&tot>0)for(const k in out)out[k]=out[k]*tot/sum;
+  }else out[ART[x.art]?x.art:'ohne']=tot;
+  return out;
+}
 const DAYS=['Mo','Di','Mi','Do','Fr','Sa','So'];
 const $=id=>document.getElementById(id);
 const fc=k=>`var(--c-${F[k]?k:'sonst'})`;
@@ -640,6 +673,8 @@ let weekStart=monday(new Date());
 function fillSelects(){
   const opts=FAECHER.map(f=>`<option value="${f.k}">${esc(f.n)}</option>`).join('');
   $('fFach').innerHTML=opts;renderChips();
+  $('fArt').innerHTML=ARTEN.map(a=>`<option value="${a.k}">${a.n}</option>`).join('');
+  renderArt();
   $('legend').innerHTML=FAECHER.map(f=>`<span><i style="--fc:${fc(f.k)}"></i>${esc(f.n)}</span>`).join('')+
     `<span><i class="dash"></i>geplant</span>`;
 }
@@ -689,12 +724,22 @@ function render(){
 
   /* Statistik: pro Fach in angezeigter Woche */
   $('statWeekLbl').textContent=`Netto pro Fach · KW ${kw}`;
-  const per={};for(const s of Object.values(state.sessions)){if(s.date>=ws&&s.date<=we)per[s.fach]=(per[s.fach]||0)+netOf(s)}
+  const per={},perArt={};
+  for(const x of Object.values(state.sessions)){if(x.date<ws||x.date>we)continue;
+    per[x.fach]=(per[x.fach]||0)+netOf(x);const pa=perArt[x.fach]||(perArt[x.fach]={});
+    for(const[k,m]of Object.entries(artSplit(x)))pa[k]=(pa[k]||0)+m}
   const max=Math.max(60,...Object.values(per));
   const rows=FAECHER.filter(f=>per[f.k]);
-  $('fachBars').innerHTML=rows.length?rows.map(f=>`<div class="bar-row" style="--fc:${fc(f.k)}"><span>${esc(f.n)}</span><div class="bar-track"><div class="bar-fill" style="width:${(per[f.k]/max*100).toFixed(1)}%"></div></div><span class="num">${fmtH(per[f.k])}</span></div>`).join('')
-    :`<span class="empty-day">Noch keine Session in dieser Woche. Starte oben den Timer oder trage eine Session nach.</span>`;
+  const ORDER=['stoff','uebung','wdh','ohne'];
+  let anyOhne=false;
+  $('fachBars').innerHTML=rows.length?rows.map(f=>{
+    const pa=perArt[f.k]||{};if(pa.ohne)anyOhne=true;
+    const segs=ORDER.filter(k=>pa[k]>0).map(k=>`<div class="bar-seg a-${k}" style="width:${(pa[k]/max*100).toFixed(2)}%" title="${artName(k)}: ${fmtH(pa[k])} h"></div>`).join('');
+    const split=ORDER.filter(k=>pa[k]>=0.5).map(k=>`${artName(k)} ${fmtH(pa[k])}`).join(' · ');
+    return `<div class="bar-row" style="--fc:${fc(f.k)}"><span>${esc(f.n)}</span><div class="bar-track">${segs}</div><span class="num">${fmtH(per[f.k])}</span><span class="bar-split">${split}</span></div>`}).join('')
+:`<span class="empty-day">Noch keine Session in dieser Woche. Starte oben den Timer oder trage eine Session nach.</span>`;
 
+  $('artLegend').innerHTML=rows.length?ARTEN.map(a=>`<span><i class="bar-seg a-${a.k}"></i>${a.n}</span>`).join('')+(anyOhne?`<span><i class="bar-seg a-ohne"></i>ohne Angabe</span>`:''):'';
   /* 8 Wochen */
   const wks=[];for(let i=7;i>=0;i--){const s=addDays(weekStart,-7*i);wks.push({kw:isoWeek(s),m:netRange(iso(s),iso(addDays(s,6))),cur:i===0})}
   const wmax=Math.max(60,...wks.map(w=>w.m));
@@ -708,12 +753,12 @@ function render(){
     const f=F[x.fach]||F.sonst;const d=parseISO(x.date);
     let rows='';
     if(Array.isArray(x.etappen)&&x.etappen.length>1){
-      x.etappen.forEach((e,i)=>{rows+=`<li><b>${fmtH(e.net??netOf(e))}</b><span>h gelernt</span></li>`;
+      x.etappen.forEach((e,i)=>{rows+=`<li><b>${fmtH(e.net??netOf(e))}</b><span>h ${esc(artName(e.art||x.art))}</span></li>`;
         if(x.etappen[i+1]){let g=toMin(x.etappen[i+1].start)-toMin(e.end);if(g<0)g+=1440;rows+=`<li class="p"><b>${fmtH(g)}</b><span>h Pause</span></li>`}});
     }
     return `<div class="ses" style="--fc:${fc(f.k)}"><div class="ses-head"><b>${DAYS[(d.getDay()+6)%7]} ${d.getDate()}.${d.getMonth()+1}.</b><span>${esc(x.start)}–${esc(x.end)}</span></div>
       ${x.thema?`<div class="ses-thema">${esc(x.thema)}</div>`:''}${rows?`<ol>${rows}</ol>`:''}
-      <div class="ses-sum"><span>Netto <b>${fmtH(netOf(x))} h</b></span><span>Pause <b>${fmtH(+x.pause||0)} h</b></span></div></div>`};
+      <div class="ses-sum"><span>Netto <b>${fmtH(netOf(x))} h</b>${!(Array.isArray(x.etappen)&&x.etappen.length>1)?`<span class="art-tag">${esc(artName(x.art))}</span>`:''}</span><span>Pause <b>${fmtH(+x.pause||0)} h</b></span></div></div>`};
   const groups=FAECHER.map(f=>({f,list:ses.filter(x=>(F[x.fach]?x.fach:'sonst')===f.k)})).filter(g=>g.list.length);
   const openSet=new Set([...document.querySelectorAll('#sesList details[open]')].map(d=>d.dataset.k));
   $('sesList').innerHTML=groups.length?groups.map(g=>{
@@ -738,6 +783,29 @@ function render(){
 }
 
 /* ---------- Timer ---------- */
+let artSel=(()=>{const v=lsGet('lernkalender-art');return ART[v]?v:'stoff'})();
+/* aktuell gültige Lernart: bei laufender Session die der aktuellen (bzw. nach langer Pause der nächsten) Etappe */
+function currentArt(){
+  const l=state.live;if(!l)return artSel;
+  const now=Date.now();const E=etappenOf(l,now);let i=E.etappen.length-1;
+  if(l.pausedAt&&now-l.pausedAt>=ETAPPE_PAUSE)i++;
+  return artOfEtappe(l,i);
+}
+function renderArt(){
+  const cur=currentArt();const el=$('tArt');
+  if(!el.children.length)el.innerHTML=ARTEN.map(a=>`<button type="button" data-art="${a.k}" aria-pressed="false">${a.n}</button>`).join('');
+  for(const b of el.children)b.setAttribute('aria-pressed',String(b.dataset.art===cur));
+  el.style.opacity=state.summary&&!state.live?'.5':'';
+}
+$('tArt').addEventListener('click',e=>{
+  const b=e.target.closest('[data-art]');if(!b||(state.summary&&!state.live))return;
+  const k=b.dataset.art;
+  if(!state.live){artSel=k;lsSet('lernkalender-art',k);renderArt();return}
+  const l={...state.live};const now=Date.now();const E=etappenOf(l,now);let i=E.etappen.length-1;
+  if(l.pausedAt&&now-l.pausedAt>=ETAPPE_PAUSE)i++;
+  const arr=[...(l.etArt||[])];for(let j=0;j<i;j++)if(!arr[j])arr[j]=artOfEtappe(l,j);arr[i]=k;l.etArt=arr;
+  safe(setLive(l));
+});
 function renderChips(){
   const cur=$('tFach').value;const f=F[cur]||FAECHER[0];
   $('tFachBtn').innerHTML=`<i class="fdot" style="--fc:${fc(f.k)}"></i><span>${esc(f.n)}</span>`;
@@ -776,17 +844,18 @@ const fmtD=min=>`${fmtH(min)} h`;
 function listHtml(items,live){
   return items.map((x,i)=>{const last=live&&i===items.length-1;
     return x.t==='pause'?`<li class="p${last?' cur':''}"><b>${fmtH(x.min)}</b><span>h Pause${last?' …':''}</span></li>`
-      :`<li class="${last?'cur':''}"><b>${fmtH(x.min)}</b><span>h gelernt${last?' …':''}</span></li>`}).join('');
+      :`<li class="${last?'cur':''}"><b>${fmtH(x.min)}</b><span>h ${x.art?esc(artName(x.art)):'gelernt'}${last?' …':''}</span></li>`}).join('');
 }
 /* Verlauf einer Session als Liste: gelernt / Pause (nur Pausen ab 30 min) */
 function sessionList(l,now){
   const E=etappenOf(l,now);const out=[];
-  E.etappen.forEach((e,i)=>{out.push({t:'learn',min:e.net/60000});if(E.gaps[i])out.push({t:'pause',min:(E.gaps[i].to-E.gaps[i].from)/60000})});
+  E.etappen.forEach((e,i)=>{out.push({t:'learn',min:e.net/60000,art:artOfEtappe(l,i)});if(E.gaps[i])out.push({t:'pause',min:(E.gaps[i].to-E.gaps[i].from)/60000})});
   if(l.pausedAt&&now-l.pausedAt>=ETAPPE_PAUSE)out.push({t:'pause',min:(now-l.pausedAt)/60000});
   return {E,items:out};
 }
 function renderTimer(){
   const l=state.live,sum=state.summary,now=Date.now();
+  renderArt();
   $('tStartBtn').hidden=!!l||!!sum;$('tPauseBtn').hidden=!l;$('tStopBtn').hidden=!l;$('tCancelBtn').hidden=!l;$('tResetBtn').hidden=!sum||!!l;
   $('tFachBtn').disabled=!!l||!!sum;$('tThema').disabled=!!l||!!sum;if(l||sum)closePick();
   const st=$('tStatus'),ol=$('tEtappen');
@@ -803,7 +872,7 @@ function renderTimer(){
   const n=liveNet(l,now);const {E,items}=sessionList(l,now);const curE=E.etappen[E.etappen.length-1];
   const longPause=l.pausedAt&&now-l.pausedAt>=ETAPPE_PAUSE;
   const s=Math.floor(curE.net/1000);
-  $('tEtLbl').textContent=longPause?`Etappe ${E.etappen.length} beendet · nächste startet bei 0`:`Etappe ${E.etappen.length}`;
+  $('tEtLbl').textContent=longPause?`Etappe ${E.etappen.length} beendet · nächste startet bei 0`:`Etappe ${E.etappen.length} · ${artName(currentArt())}`;
   $('tFace').textContent=`${Math.floor(s/3600)}:${pad(Math.floor(s/60)%60)}:${pad(s%60)}`;
   $('tTotal').textContent=fmtD(n.net/60000);$('tPause').textContent=fmtD(n.paused/60000);
   $('tStart').textContent=hm(new Date(l.startedAt));
@@ -813,7 +882,7 @@ function renderTimer(){
 }
 setInterval(()=>{if(state.live)renderTimer()},1000);
 
-$('tStartBtn').onclick=()=>safe(setLive({active:true,fach:$('tFach').value,thema:$('tThema').value.trim(),startedAt:Date.now(),pausedAt:null,pausedMs:0}));
+$('tStartBtn').onclick=()=>safe(setLive({active:true,fach:$('tFach').value,thema:$('tThema').value.trim(),art:artSel,etArt:[artSel],startedAt:Date.now(),pausedAt:null,pausedMs:0}));
 $('tPauseBtn').onclick=()=>{const l={...state.live},now=Date.now();
   if(l.pausedAt){l.pausedMs=(l.pausedMs||0)+(now-l.pausedAt);l.pauses=[...(l.pauses||[]),{from:l.pausedAt,to:now}];l.pausedAt=null}else{l.pausedAt=now}
   safe(setLive(l))};
@@ -826,9 +895,10 @@ $('tStopBtn').onclick=async()=>{
   const st=new Date(l.startedAt),en=new Date(endT);
   const rec={date:iso(st),fach:l.fach,start:hm(st),end:hm(en),pause:Math.round(n.paused/60000),thema:l.thema||'',createdAt:now};
   const {E,items}=sessionList(lc,endT);
-  if(E.etappen.length>1){rec.etappen=E.etappen.map(e=>({start:hm(new Date(e.start)),end:hm(new Date(e.end)),pause:Math.round(e.shortMs/60000),net:Math.round(e.net/60000)}))}
+  rec.art=artOfEtappe(lc,0);
+  if(E.etappen.length>1){rec.etappen=E.etappen.map((e,i)=>({start:hm(new Date(e.start)),end:hm(new Date(e.end)),pause:Math.round(e.shortMs/60000),net:Math.round(e.net/60000),art:artOfEtappe(lc,i)}))}
   await safe(put('sessions',uid(),rec),`Gespeichert: ${fmtH(netOf(rec))} h netto`);
-  const summary={fach:l.fach,thema:l.thema||'',start:rec.start,end:rec.end,net:netOf(rec),pause:rec.pause,list:items.map(x=>({t:x.t,min:Math.round(x.min)}))};
+  const summary={fach:l.fach,thema:l.thema||'',start:rec.start,end:rec.end,net:netOf(rec),pause:rec.pause,list:items.map(x=>({t:x.t,min:Math.round(x.min),art:x.art}))};
   await safe(setLive({active:false,summary}));
 };
 $('tResetBtn').onclick=()=>{$('tThema').value='';safe(setLive(null))};
@@ -854,9 +924,14 @@ function openDlg({kindV='session',id=null,date=null}={}){
     $('fDate').value=r.date;$('fFach').value=r.fach;$('fStart').value=r.start||'';$('fThema').value=r.thema||'';
     $('fEnd').value=r.end||'';$('fPause').value=r.pause??0;$('fDauer').value=r.dauer??60;
     $('doneBtn').textContent=r.done?'Als offen markieren':'Als erledigt markieren';
+    const mixed=Array.isArray(r.etappen)&&new Set(r.etappen.map(e=>e.art||r.art)).size>1;
+    $('fArt').querySelector('option[value="mix"]')?.remove();
+    if(mixed){const o=document.createElement('option');o.value='mix';o.textContent='Gemischt (je Etappe, unverändert)';$('fArt').prepend(o)}
+    $('fArt').value=mixed?'mix':(ART[r.art]?r.art:'stoff');
   }else{
     $('fDate').value=date||iso(now);$('fStart').value=pad(now.getHours())+':00';$('fEnd').value=hm(now);$('fPause').value=0;$('fDauer').value=60;$('fThema').value='';
     $('fFach').value=$('tFach').value||'mathe';
+    $('fArt').querySelector('option[value="mix"]')?.remove();$('fArt').value=artSel;
   }
   $('dlgTitle').textContent=id?'Eintrag bearbeiten':'Neuer Eintrag';
   $('delBtn').hidden=!id;syncKind();$('dlg').showModal();
@@ -871,12 +946,15 @@ $('form').addEventListener('submit',async e=>{
   if(k==='session'){
     if(!$('fEnd').value){$('err').textContent='Endzeit fehlt.';return}
     rec={...base,end:$('fEnd').value,pause:Math.max(0,+$('fPause').value||0)};
+    const av=$('fArt').value;const pv=editing&&state.sessions[editing.id];
+    rec.art=av==='mix'?(pv&&pv.art):av;
     if(netOf(rec)<=0){$('err').textContent='Netto-Zeit ist 0 – Pause ist länger als die Session.';return}
   }else{
     rec={...base,dauer:Math.max(5,+$('fDauer').value||60),done:editing?!!state.plan[editing.id]?.done:false};
   }
   const prev=editing&&state[editing.col][editing.id];
-  if(k==='session'&&prev&&prev.etappen&&prev.start===rec.start&&prev.end===rec.end&&(+prev.pause||0)===rec.pause)rec.etappen=prev.etappen;
+  if(k==='session'&&prev&&prev.etappen&&prev.start===rec.start&&prev.end===rec.end&&(+prev.pause||0)===rec.pause){
+    const av=$('fArt').value;rec.etappen=av==='mix'?prev.etappen:prev.etappen.map(e=>({...e,art:av}));}
   if(prev&&prev.createdAt)rec.createdAt=prev.createdAt;else rec.createdAt=Date.now();
   const col=k==='plan'?'plan':'sessions';
   $('dlg').close();
