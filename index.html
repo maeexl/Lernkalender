@@ -83,6 +83,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .acct-links{display:inline-flex;gap:10px}
 .link{border:0;background:none;padding:0;color:var(--muted);font:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .link:hover{color:var(--accent)}
+.onenote-link{color:var(--accent);font-weight:600}
 .login{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(3px);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px))}
 .login-card{background:var(--sheet);border:1px solid var(--line);border-top:2px solid var(--ink);border-radius:var(--r);padding:22px;max-width:380px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.15)}
 .login-card p{margin:0;color:var(--muted);font-size:.92rem}
@@ -308,7 +309,8 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
     <div class="tb-title">
       <h1>Lernkalender</h1>
       <div class="acct"><span class="sync" id="syncState" data-s="login">Nicht angemeldet</span>
-        <span class="acct-links"><button type="button" class="link" id="exportBtn">Export</button><label class="link" for="importIn">Import</label><input type="file" id="importIn" accept="application/json,.json" hidden><button type="button" class="link" id="logoutBtn">Abmelden</button></span></div>
+        <span class="acct-links"><button type="button" class="link" id="exportBtn">Export</button><label class="link" for="importIn">Import</label><input type="file" id="importIn" accept="application/json,.json" hidden><button type="button" class="link" id="logoutBtn">Abmelden</button></span>
+        <a class="link onenote-link" id="oneNoteBtn" href="lernkalender-export://start" hidden title="Startet den OneNote-Export auf diesem Laptop">OneNote exportieren</a></div>
     </div>
     <div class="tb-week"><span class="label">Woche</span><span class="val big" id="tbKw">KW –</span><span class="val sub" id="tbRange"></span></div>
     <div class="tb-net">
@@ -1038,6 +1040,9 @@ $('goalForm').addEventListener('submit',async e=>{e.preventDefault();const h=par
   $('goalForm').hidden=true;await safe(setSettings({goalMin:Math.round(h*60)}),'Wochenziel gespeichert')});
 fillSelects();buildTodos();initSort();loadLocal();render();
 $('exportBtn').onclick=exportData;
+/* OneNote-Export gibt es nur am Windows-Laptop (über den eingerichteten Link) */
+if(/Windows/i.test(navigator.userAgent))$('oneNoteBtn').hidden=false;
+$('oneNoteBtn').addEventListener('click',()=>toast('OneNote-Export wird gestartet …'));
 $('importIn').addEventListener('change',e=>{const f=e.target.files[0];if(f)importData(f);e.target.value=''});
 $('logoutBtn').onclick=logout;
 $('loginBtn').onclick=()=>login(false);
