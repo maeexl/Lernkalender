@@ -117,6 +117,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* Woche */
 .weeknav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+a.btn{display:inline-block;text-decoration:none;color:inherit}
 .weeknav .kw{font-family:var(--f-display);font-size:1.25rem;font-weight:600;min-width:12ch;text-align:center}
 .board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 @media (max-width:1320px){.board{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}}
@@ -332,6 +333,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
           <span class="kw" id="kwLabel">KW</span>
           <button class="btn" id="nextW" aria-label="Nächste Woche">→</button>
           <button class="btn ghost" id="todayW">Heute</button>
+          <a class="btn" id="myMciBtn" href="https://my.mci4me.at/dates/overview" target="_blank" rel="noopener" title="myMCI-Terminübersicht öffnen">myMCI ↗</a>
           <button class="btn primary" id="newEntry">+ Eintrag</button>
         </div>
       </div>
