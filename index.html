@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#0e7a6a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Lernkalender">
+<meta name="apple-mobile-web-app-title" content="Wochenplaner">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>Lernkalender Mechatronik</title>
+<title>Wochenplaner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -20,7 +20,7 @@
   --paper:#eef2f1; --sheet:#ffffff; --ink:#16222a; --muted:#5a6a71; --line:#cfd8d8; --grid:rgba(22,34,42,.055);
   --accent:#0e7a6a; --accent-ink:#ffffff; --accent-soft:rgba(14,122,106,.10);
   --warn:#b4540a; --danger:#b42318;
-  --c-mathe:#2f55d4; --c-et:#c0267f; --c-physik:#e8590c; --c-tm:#c92a2a; --c-wt:#2b8a3e; --c-sw:#1f7a99; --c-wa:#a88200; --c-sonst:#66767c;
+  --c-mathe:#2f55d4; --c-et:#c0267f; --c-physik:#e8590c; --c-tm:#c92a2a; --c-wt:#2b8a3e; --c-sw:#1f7a99; --c-wa:#a88200; --c-sonst:#66767c; --c-sport:#6d4fd3;
   --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -30,13 +30,13 @@
   --paper:#0f1619; --sheet:#162125; --ink:#e3eaeb; --muted:#94a4a9; --line:#2a393f; --grid:rgba(255,255,255,.035);
   --accent:#3dbba5; --accent-ink:#082320; --accent-soft:rgba(61,187,165,.13);
   --warn:#f0a35a; --danger:#f2786d;
-  --c-mathe:#7f9bff; --c-et:#f06bc0; --c-physik:#ff9a4d; --c-tm:#ff6b6b; --c-wt:#69c47a; --c-sw:#5ec4e6; --c-wa:#f2cc3d; --c-sonst:#9aa8ad;
+  --c-mathe:#7f9bff; --c-et:#f06bc0; --c-physik:#ff9a4d; --c-tm:#ff6b6b; --c-wt:#69c47a; --c-sw:#5ec4e6; --c-wa:#f2cc3d; --c-sonst:#9aa8ad; --c-sport:#a993ff;
   color-scheme:dark }}
 :root[data-theme="dark"]{
   --paper:#0f1619; --sheet:#162125; --ink:#e3eaeb; --muted:#94a4a9; --line:#2a393f; --grid:rgba(255,255,255,.035);
   --accent:#3dbba5; --accent-ink:#082320; --accent-soft:rgba(61,187,165,.13);
   --warn:#f0a35a; --danger:#f2786d;
-  --c-mathe:#7f9bff; --c-et:#f06bc0; --c-physik:#ff9a4d; --c-tm:#ff6b6b; --c-wt:#69c47a; --c-sw:#5ec4e6; --c-wa:#f2cc3d; --c-sonst:#9aa8ad;
+  --c-mathe:#7f9bff; --c-et:#f06bc0; --c-physik:#ff9a4d; --c-tm:#ff6b6b; --c-wt:#69c47a; --c-sw:#5ec4e6; --c-wa:#f2cc3d; --c-sonst:#9aa8ad; --c-sport:#a993ff;
   color-scheme:dark }
 
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* Schriftfeld: feine Haarlinien, vier Felder */
-.titleblock{display:grid;grid-template-columns:1.5fr 1fr 1.4fr 1fr;grid-template-areas:"t w n h";background:var(--sheet);border:1px solid var(--line);border-top:2px solid var(--ink)}
+.titleblock{display:grid;grid-template-columns:1.4fr .65fr 1.4fr 1.45fr;grid-template-areas:"t w n h";background:var(--sheet);border:1px solid var(--line);border-top:2px solid var(--ink)}
 .titleblock>div{padding:12px 16px;border-left:1px solid var(--line);min-width:0;display:flex;flex-direction:column;gap:3px;justify-content:center}
 .tb-title{grid-area:t;border-left:0!important}
 .tb-week{grid-area:w}.tb-net{grid-area:n}.tb-today{grid-area:h}
@@ -90,11 +90,18 @@ button,input,select,textarea{font:inherit;color:inherit}
 .login-msg{color:var(--warn)!important}
 .login-msg:empty{display:none}
 @media (max-width:760px){
-  .titleblock{grid-template-columns:1fr 1fr;grid-template-areas:"t t" "n n" "w h"}
-  .tb-title{border-bottom:1px solid var(--line)}
+  .titleblock{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"t t t w" "n n n n" "h h h h"}
+  .titleblock>div{padding:10px 12px}
+  .tb-title,.tb-week{border-bottom:1px solid var(--line)}
   .tb-net{border-left:0!important;border-bottom:1px solid var(--line)}
-  .tb-week{border-left:0!important}
-  .titleblock h1{font-size:1.6rem}
+  .tb-today{border-left:0!important}
+  .titleblock h1{font-size:1.45rem}
+  .titleblock .big{font-size:1.2rem}
+  .tb-net .goal-of{font-size:.85rem}
+  .titleblock .label{font-size:.68rem}
+  .tb-week .sub{white-space:nowrap;font-size:.72rem}
+  .goal-edit{white-space:nowrap;font-size:.68rem}
+  .tb-net .goal-head{align-items:flex-start}
 }
 
 .main{display:grid;grid-template-columns:360px minmax(0,1fr);grid-template-areas:"side todo" "week week";gap:20px;align-items:start}
@@ -249,6 +256,28 @@ a.btn{display:inline-block;text-decoration:none;color:inherit}
 .ses-sum b{font-family:var(--f-mono);color:var(--ink);font-weight:500}
 .wk-labels{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;font-family:var(--f-mono);font-size:.66rem;color:var(--muted);text-align:center}
 
+.view-seg{width:auto}.view-seg button{flex:0 0 auto;padding:6px 12px}
+.item.sport{background:color-mix(in srgb,var(--c-sport) 16%,transparent);border-left:3px solid var(--c-sport);border-radius:3px 4px 4px 3px}
+.item.sport .chip{background:var(--c-sport)}
+.item.sport .ok{color:var(--c-sport);font-weight:700}
+.item.sport .it-time{white-space:nowrap}
+.board.only-learn .item.sport,.board.only-sport .item:not(.sport){display:none}
+.tb-sportcell .val{color:var(--c-sport)}
+.sp-big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sp-unit{font-size:.85rem;color:var(--muted)}
+.sp-kinds{display:flex;flex-wrap:wrap;gap:2px 14px;font-family:var(--f-mono);font-size:.8rem;color:var(--muted);margin-top:4px}
+.sp-kinds b{font-family:var(--f-body);font-weight:600;color:var(--ink)}
+.sp-none{font-size:.85rem;color:var(--muted)}
+.sport-dots{display:inline-flex;gap:4px;align-self:center}
+.sport-dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--c-sport)}
+.sport-dots i.on{background:var(--c-sport)}
+.legend .sep{width:1px;height:14px;background:var(--line)}
+.sport-stat{margin-top:14px}
+.sport-row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 8.5em;gap:8px;align-items:center;font-size:.85rem}
+.sport-row .num{text-align:right;font-family:var(--f-mono);font-size:.8rem}
+.sport-row .bar-track{height:12px;display:flex}
+.sport-row .bar-fill{background:var(--c-sport)}
+.sport-row .bar-fill.plan{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--c-sport) 40%,var(--paper)) 0 3px,var(--paper) 3px 6px)}
 /* To Do */
 .todos{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .td{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--sheet);min-width:0}
@@ -308,7 +337,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
 <div class="wrap">
   <header class="titleblock" aria-label="Schriftfeld">
     <div class="tb-title">
-      <h1>Lernkalender</h1>
+      <h1>Wochenplaner</h1>
       <div class="acct"><span class="sync" id="syncState" data-s="login">Nicht angemeldet</span>
         <span class="acct-links"><button type="button" class="link" id="exportBtn">Export</button><label class="link" for="importIn">Import</label><input type="file" id="importIn" accept="application/json,.json" hidden><button type="button" class="link" id="logoutBtn">Abmelden</button></span>
         <a class="link onenote-link" id="oneNoteBtn" href="lernkalender-export://start" hidden title="Startet den OneNote-Export auf diesem Laptop">OneNote exportieren</a></div>
@@ -321,13 +350,14 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       <form class="goal-form" id="goalForm" hidden><label for="goalIn">Ziel</label><input type="number" id="goalIn" min="1" max="80" step="0.5" inputmode="decimal"><span>h</span><button class="btn primary" type="submit">OK</button></form>
       <span class="val sub" id="tbPlan"></span>
     </div>
-    <div class="tb-today"><span class="label">Heute netto</span><span class="val big" id="tbToday">0:00 h</span></div>
+    <div class="tb-today tb-sportcell"><span class="label">Sport diese Woche</span><div id="tbSport"></div></div>
   </header>
 
   <div class="main">
     <section class="panel week-panel" aria-labelledby="hWeek">
       <div class="panel-head">
         <h2 id="hWeek">Wochenplan</h2>
+        <div class="art-seg view-seg" id="viewSeg" role="group" aria-label="Anzeigen"><button type="button" aria-pressed="true" data-v="all">Alle</button><button type="button" aria-pressed="false" data-v="learn">Lernen</button><button type="button" aria-pressed="false" data-v="sport">Sport</button></div>
         <div class="weeknav">
           <button class="btn" id="prevW" aria-label="Vorige Woche">←</button>
           <span class="kw" id="kwLabel">KW</span>
@@ -391,6 +421,10 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
         <div class="label" id="statWeekLbl">Netto pro Fach</div>
         <div class="bars" id="fachBars"></div>
         <div class="art-legend" id="artLegend"></div>
+        <div class="stat-block sport-stat">
+          <div class="label" id="sportLbl">Sport</div>
+          <div class="bars" id="sportBars"></div>
+        </div>
       </div>
       <div class="stat-block">
         <div class="label">Netto der letzten 8 Wochen (h)</div>
@@ -412,19 +446,21 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
     <div class="panel-head">
       <h2 id="dlgTitle">Neuer Eintrag</h2>
       <div class="seg" role="radiogroup" aria-label="Art">
-        <label><input type="radio" name="kind" id="kSession" value="session" checked><span>Gelernt</span></label>
+        <label><input type="radio" name="kind" id="kSession" value="session" checked><span id="kSessionTxt">Gelernt</span></label>
         <label><input type="radio" name="kind" id="kPlan" value="plan"><span>Geplant</span></label>
       </div>
     </div>
+    <div class="field"><span class="label" id="fBerLbl">Bereich</span>
+      <div class="art-seg" role="radiogroup" aria-labelledby="fBerLbl" id="fBer"><button type="button" data-b="learn" aria-pressed="true">Lernen</button><button type="button" data-b="sport" aria-pressed="false">Sport</button></div></div>
     <div class="fields">
       <div class="field"><label class="label" for="fDate">Datum</label><input type="date" id="fDate" required></div>
-      <div class="field"><label class="label" for="fFach">Fach</label><select id="fFach"></select></div>
+      <div class="field"><label class="label" for="fFach" id="fFachLbl">Fach</label><select id="fFach"></select></div>
       <div class="field"><label class="label" for="fStart">Start</label><input type="time" id="fStart" required></div>
       <div class="field sOnly"><label class="label" for="fEnd">Ende</label><input type="time" id="fEnd"></div>
       <div class="field sOnly"><label class="label" for="fPause">Pause (min)</label><input type="number" id="fPause" min="0" step="5" value="0" inputmode="numeric"></div>
       <div class="field pOnly" hidden><label class="label" for="fDauer">Dauer (min)</label><input type="number" id="fDauer" min="5" step="5" value="60" inputmode="numeric"></div>
       <div class="field full sOnly"><label class="label" for="fArt">Lernart</label><select id="fArt"></select></div>
-      <div class="field full"><label class="label" for="fThema">Thema</label><input id="fThema" placeholder="z. B. Merkbuch 9.2, Bruchintegrale"></div>
+      <div class="field full"><label class="label" for="fThema" id="fThemaLbl">Thema</label><input id="fThema" placeholder="z. B. Merkbuch 9.2, Bruchintegrale"></div>
     </div>
     <div class="calc sOnly" id="calc">Netto: <b>–</b></div>
     <div class="err" id="err" role="alert"></div>
@@ -472,7 +508,11 @@ function artSplit(x){
 }
 const DAYS=['Mo','Di','Mi','Do','Fr','Sa','So'];
 const $=id=>document.getElementById(id);
-const fc=k=>`var(--c-${F[k]?k:'sonst'})`;
+/* Sport: eigener Bereich, zählt nie zur Lernzeit */
+const SPORT=[{k:'cal',n:'Calisthenics',a:'CAL'},{k:'lauf',n:'Laufen',a:'LAUF'}];
+SPORT.forEach(x=>{x.sport=true;F[x.k]=x});
+const isSport=k=>!!(F[k]&&F[k].sport);
+const fc=k=>isSport(k)?'var(--c-sport)':`var(--c-${F[k]?k:'sonst'})`;
 
 /* ---------- Zeit-Helfer ---------- */
 const pad=n=>String(n).padStart(2,'0');
@@ -680,7 +720,7 @@ function fillSelects(){
   $('fFach').innerHTML=opts;renderChips();
   $('fArt').innerHTML=ARTEN.map(a=>`<option value="${a.k}">${a.n}</option>`).join('');
   renderArt();
-  $('legend').innerHTML=FAECHER.map(f=>`<span><i style="--fc:${fc(f.k)}"></i>${esc(f.n)}</span>`).join('')+
+  $('legend').innerHTML=FAECHER.map(f=>`<span><i style="--fc:${fc(f.k)}"></i>${esc(f.n)}</span>`).join('')+`<span class="sep"></span><span><i style="--fc:var(--c-sport)"></i>Sport (${SPORT.map(x=>x.a).join(' · ')})</span>`+
     `<span><i class="dash"></i>geplant</span>`;
 }
 
@@ -694,16 +734,20 @@ function render(){
   const kw=isoWeek(weekStart);
   $('kwLabel').textContent=`KW ${kw} · ${weekStart.getFullYear()}`;
   $('tbKw').textContent=`KW ${kw}`;
-  $('tbRange').textContent=`${weekStart.getDate()}.${weekStart.getMonth()+1}. – ${addDays(weekStart,6).getDate()}.${addDays(weekStart,6).getMonth()+1}.`;
+  {const e=addDays(weekStart,6);$('tbRange').textContent=weekStart.getMonth()===e.getMonth()?`${weekStart.getDate()}.–${e.getDate()}.${e.getMonth()+1}.`:`${weekStart.getDate()}.${weekStart.getMonth()+1}.–${e.getDate()}.${e.getMonth()+1}.`;}
   const weekNet=netRange(ws,we);
   const goal=+(state.settings&&state.settings.goalMin)||1080;const pct=Math.min(100,weekNet/goal*100);
   $('tbNet').innerHTML=`${fmtH(weekNet)} <span class="goal-of">/ ${fmtH(goal)} h</span>`;
   $('goalFill').style.width=pct.toFixed(1)+'%';$('goalFill').classList.toggle('reached',weekNet>=goal);
   $('goalBar').setAttribute('aria-valuenow',Math.round(pct));$('goalBar').title=`${Math.round(weekNet/goal*100)} % vom Wochenziel`;
-  const planned=Object.values(state.plan).filter(p=>p.date>=ws&&p.date<=we);
+  const sportW=Object.values(state.plan).filter(p=>p.date>=ws&&p.date<=we&&isSport(p.fach)).sort((a,b)=>(a.date+(a.start||'')).localeCompare(b.date+(b.start||'')));
+  const sDone=sportW.filter(p=>p.done);
+  $('tbSport').innerHTML=sportW.length?`<div class="sp-big"><span class="val big">${sDone.length} / ${sportW.length}</span><span class="sp-unit">Einheiten</span><span class="sport-dots">${sportW.map(p=>`<i class="${p.done?'on':''}"></i>`).join('')}</span></div>
+    <div class="sp-kinds">${SPORT.map(x=>{const l=sportW.filter(p=>p.fach===x.k);return l.length?`<span><b>${x.n}</b> ${l.filter(p=>p.done).length}/${l.length}</span>`:''}).join('')}<span><b>Trainiert</b> ${fmtH(sDone.reduce((a,p)=>a+(+p.dauer||0),0))} h</span></div>`
+    :`<span class="sp-none">Noch kein Training geplant</span>`;
+  const planned=Object.values(state.plan).filter(p=>p.date>=ws&&p.date<=we&&!isSport(p.fach));
   const plannedMin=planned.reduce((a,p)=>a+(+p.dauer||0),0);
   $('tbPlan').textContent=planned.length?`geplant ${fmtH(plannedMin)} h · ${planned.filter(p=>p.done).length}/${planned.length} erledigt`:'nichts geplant';
-  $('tbToday').textContent=`${fmtH(netRange(todayStr,todayStr))} h`;
 
   /* Board */
   const board=$('board');board.innerHTML='';
@@ -719,8 +763,9 @@ function render(){
     if(!all.length)html+=`<span class="empty-day">–</span>`;
     for(const it of all){
       const f=F[it.p.fach]||F.sonst;
-      const timeHtml=esc(it.kind==='session'?`${fmtH(netOf(it.p))} h netto`:`${it.p.start||''} · ${fmtH(+it.p.dauer||0)} h geplant`);
-      html+=`<button class="item ${it.kind==='plan'?'plan':''} ${it.p.done?'done':''}" style="--fc:${fc(f.k)}" data-kind="${it.kind}" data-id="${esc(it.id)}">
+      const sp=isSport(f.k);
+      const timeHtml=sp?(it.p.done?`<span class="ok">✓</span> ${esc(it.p.start||'')} · ${+it.p.dauer||0} min`:`${esc(it.p.start||'')} · ${+it.p.dauer||0} min geplant`):esc(it.kind==='session'?`${fmtH(netOf(it.p))} h netto`:`${it.p.start||''} · ${fmtH(+it.p.dauer||0)} h geplant`);
+      html+=`<button class="item ${sp?'sport':(it.kind==='plan'?'plan':'')} ${it.p.done&&!sp?'done':''}" style="--fc:${fc(f.k)}" data-kind="${it.kind}" data-id="${esc(it.id)}">
         <span class="chip">${f.a}</span><span class="it-time">${timeHtml}</span><span class="it-t">${esc(it.p.thema||f.n)}</span></button>`;
     }
     html+=`</div><button class="add-day" data-date="${ds}">+ hinzufügen</button>`;
@@ -745,6 +790,12 @@ function render(){
 :`<span class="empty-day">Noch keine Session in dieser Woche. Starte oben den Timer oder trage eine Session nach.</span>`;
 
   $('artLegend').innerHTML=rows.length?ARTEN.map(a=>`<span><i class="bar-seg a-${a.k}"></i>${a.n}</span>`).join('')+(anyOhne?`<span><i class="bar-seg a-ohne"></i>ohne Angabe</span>`:''):'';
+  $('sportLbl').textContent=`Sport · KW ${kw}`;
+  {const smax=Math.max(60,...SPORT.map(x=>sportW.filter(p=>p.fach===x.k).reduce((a,p)=>a+(+p.dauer||0),0)));
+  const rowsS=SPORT.filter(x=>sportW.some(p=>p.fach===x.k));
+  $('sportBars').innerHTML=rowsS.length?rowsS.map(x=>{const l=sportW.filter(p=>p.fach===x.k);const d=l.filter(p=>p.done).reduce((a,p)=>a+(+p.dauer||0),0);const pl=l.filter(p=>!p.done).reduce((a,p)=>a+(+p.dauer||0),0);
+    return `<div class="sport-row"><span>${esc(x.n)}</span><div class="bar-track"><div class="bar-fill" style="width:${(d/smax*100).toFixed(1)}%"></div><div class="bar-fill plan" style="width:${(pl/smax*100).toFixed(1)}%"></div></div><span class="num">${l.filter(p=>p.done).length}/${l.length} · ${fmtH(d)} h</span></div>`}).join('')
+    :`<span class="empty-day">Kein Training in dieser Woche.</span>`;}
   /* 8 Wochen */
   const wks=[];for(let i=7;i>=0;i--){const s=addDays(weekStart,-7*i);wks.push({kw:isoWeek(s),m:netRange(iso(s),iso(addDays(s,6))),cur:i===0})}
   const wmax=Math.max(60,...wks.map(w=>w.m));
@@ -913,8 +964,20 @@ $('tCancelBtn').onclick=()=>{if(Date.now()-cancelArm<3000){cancelArm=0;$('tCance
 /* ---------- Dialog ---------- */
 let editing=null;
 function kind(){return $('kPlan').checked?'plan':'session'}
-function syncKind(){const p=kind()==='plan';document.querySelectorAll('.sOnly').forEach(e=>e.hidden=p);document.querySelectorAll('.pOnly').forEach(e=>e.hidden=!p);
-  $('doneBtn').hidden=!(p&&editing);updateCalc()}
+let berSel='learn';const bereich=()=>berSel;
+function setBereich(b){
+  berSel=b;for(const x of $('fBer').children)x.setAttribute('aria-pressed',String(x.dataset.b===b));
+  const sp=b==='sport';const cur=$('fFach').value;
+  $('fFach').innerHTML=(sp?SPORT:FAECHER).map(f=>`<option value="${f.k}">${esc(f.n)}</option>`).join('');
+  if([...$('fFach').options].some(o=>o.value===cur))$('fFach').value=cur;
+  $('fFachLbl').textContent=sp?'Sportart':'Fach';$('fThemaLbl').textContent=sp?'Notiz':'Thema';
+  $('fThema').placeholder=sp?'z. B. Push-Day, Intervalle':'z. B. Merkbuch 9.2, Bruchintegrale';
+  $('kSessionTxt').textContent=sp?'Erledigt':'Gelernt';
+  syncKind();
+}
+$('fBer').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(b&&!$('fBer').dataset.locked)setBereich(b.dataset.b)});
+function syncKind(){const sp=bereich()==='sport';const p=sp||kind()==='plan';document.querySelectorAll('.sOnly').forEach(e=>e.hidden=p);document.querySelectorAll('.pOnly').forEach(e=>e.hidden=!p);
+  $('doneBtn').hidden=!(p&&editing)||sp;updateCalc()}
 function updateCalc(){const n=netOf({start:$('fStart').value,end:$('fEnd').value,pause:$('fPause').value});$('calc').innerHTML=`Netto: <b>${$('fStart').value&&$('fEnd').value?fmtH(n)+' h':'–'}</b>`}
 ['fStart','fEnd','fPause'].forEach(i=>$(i).addEventListener('input',updateCalc));
 document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',syncKind));
@@ -938,6 +1001,13 @@ function openDlg({kindV='session',id=null,date=null}={}){
     $('fFach').value=$('tFach').value||'mathe';
     $('fArt').querySelector('option[value="mix"]')?.remove();$('fArt').value=artSel;
   }
+  const r0=id?(kindV==='plan'?state.plan:state.sessions)[id]:null;
+  const sp=!!(r0&&isSport(r0.fach));
+  setBereich(sp?'sport':'learn');
+  if(r0)$('fFach').value=r0.fach;
+  /* ein gespeicherter Eintrag bleibt in seinem Bereich; Sport darf zwischen geplant und erledigt wechseln */
+  $('fBer').dataset.locked=id?'1':'';$('fBer').style.opacity=id?'.6':'';
+  if(sp){$(r0.done?'kSession':'kPlan').checked=true;document.querySelectorAll('input[name=kind]').forEach(x=>x.disabled=false)}
   $('dlgTitle').textContent=id?'Eintrag bearbeiten':'Neuer Eintrag';
   $('delBtn').hidden=!id;syncKind();$('dlg').showModal();
 }
@@ -948,6 +1018,11 @@ $('form').addEventListener('submit',async e=>{
   const k=kind();const base={date:$('fDate').value,fach:$('fFach').value,start:$('fStart').value,thema:$('fThema').value.trim()};
   if(!base.date||!base.start){$('err').textContent='Datum und Startzeit fehlen.';return}
   let rec;
+  if(bereich()==='sport'){
+    rec={...base,dauer:Math.max(5,+$('fDauer').value||60),done:k==='session'};
+    const prevS=editing&&state[editing.col][editing.id];rec.createdAt=prevS&&prevS.createdAt||Date.now();
+    $('dlg').close();await safe(put('plan',editing?editing.id:uid(),rec),'Gespeichert');return;
+  }
   if(k==='session'){
     if(!$('fEnd').value){$('err').textContent='Endzeit fehlt.';return}
     rec={...base,end:$('fEnd').value,pause:Math.max(0,+$('fPause').value||0)};
@@ -1042,6 +1117,10 @@ $('goalForm').addEventListener('submit',async e=>{e.preventDefault();const h=par
   $('goalForm').hidden=true;await safe(setSettings({goalMin:Math.round(h*60)}),'Wochenziel gespeichert')});
 fillSelects();buildTodos();initSort();loadLocal();render();
 $('exportBtn').onclick=exportData;
+{let v='all';try{v=localStorage.getItem('wochenplaner-view')||'all'}catch(e){}
+ const setView=v=>{for(const x of $('viewSeg').children)x.setAttribute('aria-pressed',String(x.dataset.v===v));$('board').className='board'+(v==='all'?'':' only-'+v);try{localStorage.setItem('wochenplaner-view',v)}catch(e){}};
+ setView(['all','learn','sport'].includes(v)?v:'all');
+ $('viewSeg').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)setView(b.dataset.v)});}
 /* OneNote-Export gibt es nur am Windows-Laptop (über den eingerichteten Link) */
 if(/Windows/i.test(navigator.userAgent))$('oneNoteBtn').hidden=false;
 $('oneNoteBtn').addEventListener('click',()=>toast('OneNote-Export wird gestartet …'));

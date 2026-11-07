@@ -1,6 +1,6 @@
-# Lernkalender
+# Wochenplaner
 
-Web-App für Lernsessions (Timer mit Etappen), Wochenplan, To-Dos pro Fach und Statistik.
+Web-App für Lernsessions (Timer mit Etappen), Sport, Wochenplan, To-Dos pro Fach und Statistik.
 Die Daten liegen als `lernkalender.json` im App-Ordner des eigenen OneDrive (`Apps/Lernkalender`).
 
 - Läuft auf GitHub Pages: https://maeexl.github.io/Lernkalender/
