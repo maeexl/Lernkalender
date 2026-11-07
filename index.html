@@ -260,7 +260,6 @@ a.btn{display:inline-block;text-decoration:none;color:inherit}
 .item.sport{background:color-mix(in srgb,var(--c-sport) 16%,transparent);border-left:3px solid var(--c-sport);border-radius:3px 4px 4px 3px}
 .item.sport .chip{background:var(--c-sport)}
 .item.sport .ok{color:var(--c-sport);font-weight:700}
-.item.sport .it-time{white-space:nowrap}
 .board.only-learn .item.sport,.board.only-sport .item:not(.sport){display:none}
 .tb-sportcell .val{color:var(--c-sport)}
 .sp-big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -763,7 +762,7 @@ function render(){
     for(const it of all){
       const f=F[it.p.fach]||F.sonst;
       const sp=isSport(f.k);
-      const timeHtml=sp?(it.p.done?`<span class="ok">✓</span> ${esc(it.p.start||'')} · ${+it.p.dauer||0} min`:`${esc(it.p.start||'')} · ${+it.p.dauer||0} min geplant`):esc(it.kind==='session'?`${fmtH(netOf(it.p))} h netto`:`${it.p.start||''} · ${fmtH(+it.p.dauer||0)} h geplant`);
+      const timeHtml=sp?(it.p.done?`${esc(it.p.start||'')}&nbsp;·&nbsp;${+it.p.dauer||0}&nbsp;min <span class="ok">✓&nbsp;erledigt</span>`:`${esc(it.p.start||'')}&nbsp;·&nbsp;${+it.p.dauer||0}&nbsp;min geplant`):esc(it.kind==='session'?`${fmtH(netOf(it.p))} h netto`:`${it.p.start||''} · ${fmtH(+it.p.dauer||0)} h geplant`);
       html+=`<button class="item ${sp?'sport':(it.kind==='plan'?'plan':'')} ${it.p.done&&!sp?'done':''}" style="--fc:${fc(f.k)}" data-kind="${it.kind}" data-id="${esc(it.id)}">
         <span class="chip">${f.a}</span><span class="it-time">${timeHtml}</span><span class="it-t">${esc(it.p.thema||f.n)}</span></button>`;
     }
