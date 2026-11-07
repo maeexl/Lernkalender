@@ -975,7 +975,7 @@ function setBereich(b){
 }
 $('fBer').addEventListener('click',e=>{const b=e.target.closest('[data-b]');if(b&&!$('fBer').dataset.locked)setBereich(b.dataset.b)});
 function syncKind(){const sp=bereich()==='sport';const p=sp||kind()==='plan';document.querySelectorAll('.sOnly').forEach(e=>e.hidden=p);document.querySelectorAll('.pOnly').forEach(e=>e.hidden=!p);
-  $('doneBtn').hidden=!(p&&editing)||sp;updateCalc()}
+  $('doneBtn').hidden=!(p&&editing);updateCalc()}
 function updateCalc(){const n=netOf({start:$('fStart').value,end:$('fEnd').value,pause:$('fPause').value});$('calc').innerHTML=`Netto: <b>${$('fStart').value&&$('fEnd').value?fmtH(n)+' h':'–'}</b>`}
 ['fStart','fEnd','fPause'].forEach(i=>$(i).addEventListener('input',updateCalc));
 document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',syncKind));
