@@ -271,7 +271,7 @@ a.btn{display:inline-block;text-decoration:none;color:inherit}
 .sport-dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--c-sport)}
 .sport-dots i.on{background:var(--c-sport)}
 .legend .sep{width:1px;height:14px;background:var(--line)}
-.sport-stat{margin-top:14px}
+.sport-stat{max-width:760px}
 .sport-row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 8.5em;gap:8px;align-items:center;font-size:.85rem}
 .sport-row .num{text-align:right;font-family:var(--f-mono);font-size:.8rem}
 .sport-row .bar-track{height:12px;display:flex}
@@ -413,16 +413,12 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
   </section>
   </div>
   <section class="panel" aria-labelledby="hStats">
-    <h2 id="hStats">Statistik</h2>
+    <h2 id="hStats">Statistik Lernen</h2>
     <div class="stats-grid">
       <div class="stat-block">
         <div class="label" id="statWeekLbl">Netto pro Fach</div>
         <div class="bars" id="fachBars"></div>
         <div class="art-legend" id="artLegend"></div>
-        <div class="stat-block sport-stat">
-          <div class="label" id="sportLbl">Sport</div>
-          <div class="bars" id="sportBars"></div>
-        </div>
       </div>
       <div class="stat-block">
         <div class="label">Netto der letzten 8 Wochen (h)</div>
@@ -435,6 +431,13 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
     <div class="stat-block">
       <div class="label" id="sesLbl">Sessions dieser Woche</div>
       <div class="ses-list" id="sesList"></div>
+    </div>
+  </section>
+  <section class="panel" aria-labelledby="hSport">
+    <h2 id="hSport">Statistik Sport</h2>
+    <div class="stat-block sport-stat">
+      <div class="label" id="sportLbl">Sport</div>
+      <div class="bars" id="sportBars"></div>
     </div>
   </section>
 </div>
@@ -788,7 +791,7 @@ function render(){
 :`<span class="empty-day">Noch keine Session in dieser Woche. Starte oben den Timer oder trage eine Session nach.</span>`;
 
   $('artLegend').innerHTML=rows.length?ARTEN.map(a=>`<span><i class="bar-seg a-${a.k}"></i>${a.n}</span>`).join('')+(anyOhne?`<span><i class="bar-seg a-ohne"></i>ohne Angabe</span>`:''):'';
-  $('sportLbl').textContent=`Sport · KW ${kw}`;
+  $('sportLbl').textContent=`Pro Sportart · KW ${kw}`;
   {const smax=Math.max(60,...SPORT.map(x=>sportW.filter(p=>p.fach===x.k).reduce((a,p)=>a+(+p.dauer||0),0)));
   const rowsS=SPORT.filter(x=>sportW.some(p=>p.fach===x.k));
   $('sportBars').innerHTML=rowsS.length?rowsS.map(x=>{const l=sportW.filter(p=>p.fach===x.k);const d=l.filter(p=>p.done).reduce((a,p)=>a+(+p.dauer||0),0);const pl=l.filter(p=>!p.done).reduce((a,p)=>a+(+p.dauer||0),0);
