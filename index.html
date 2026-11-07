@@ -80,7 +80,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .acct{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:.75rem;color:var(--muted);margin-top:4px}
 .sync[data-s="ok"]{color:var(--accent)}
 .sync[data-s="err"],.sync[data-s="login"]{color:var(--warn)}
-.acct-links{display:inline-flex;gap:10px}
+.acct-links{display:flex;flex-wrap:wrap;gap:4px 10px;width:100%}
 .link{border:0;background:none;padding:0;color:var(--muted);font:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .link:hover{color:var(--accent)}
 .onenote-link{color:var(--accent);font-weight:600}
@@ -339,8 +339,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
     <div class="tb-title">
       <h1>Wochenplaner</h1>
       <div class="acct"><span class="sync" id="syncState" data-s="login">Nicht angemeldet</span>
-        <span class="acct-links"><button type="button" class="link" id="exportBtn">Export</button><label class="link" for="importIn">Import</label><input type="file" id="importIn" accept="application/json,.json" hidden><button type="button" class="link" id="logoutBtn">Abmelden</button></span>
-        <a class="link onenote-link" id="oneNoteBtn" href="lernkalender-export://start" hidden title="Startet den OneNote-Export auf diesem Laptop">OneNote exportieren</a></div>
+        <span class="acct-links"><button type="button" class="link" id="exportBtn">Export</button><label class="link" for="importIn">Import</label><input type="file" id="importIn" accept="application/json,.json" hidden><button type="button" class="link" id="logoutBtn">Abmelden</button><a class="link onenote-link" id="oneNoteBtn" href="lernkalender-export://start" hidden title="Startet den OneNote-Export auf diesem Laptop">OneNote exportieren</a></span></div>
     </div>
     <div class="tb-week"><span class="label">Woche</span><span class="val big" id="tbKw">KW –</span><span class="val sub" id="tbRange"></span></div>
     <div class="tb-net">
