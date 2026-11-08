@@ -349,14 +349,14 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       <form class="goal-form" id="goalForm" hidden><label for="goalIn">Ziel</label><input type="number" id="goalIn" min="1" max="80" step="0.5" inputmode="decimal"><span>h</span><button class="btn primary" type="submit">OK</button></form>
       <span class="val sub" id="tbPlan"></span>
     </div>
-    <div class="tb-today tb-sportcell"><span class="label">Sport diese Woche</span><div id="tbSport"></div></div>
+    <div class="tb-today tb-sportcell"><span class="label">Training diese Woche</span><div id="tbSport"></div></div>
   </header>
 
   <div class="main">
     <section class="panel week-panel" aria-labelledby="hWeek">
       <div class="panel-head">
         <h2 id="hWeek">Wochenplan</h2>
-        <div class="art-seg view-seg" id="viewSeg" role="group" aria-label="Anzeigen"><button type="button" aria-pressed="true" data-v="all">Alle</button><button type="button" aria-pressed="false" data-v="learn">Lernen</button><button type="button" aria-pressed="false" data-v="sport">Sport</button></div>
+        <div class="art-seg view-seg" id="viewSeg" role="group" aria-label="Anzeigen"><button type="button" aria-pressed="true" data-v="all">Alle</button><button type="button" aria-pressed="false" data-v="learn">Lernen</button><button type="button" aria-pressed="false" data-v="sport">Training</button></div>
         <div class="weeknav">
           <button class="btn" id="prevW" aria-label="Vorige Woche">←</button>
           <span class="kw" id="kwLabel">KW</span>
@@ -435,9 +435,9 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
     </div>
   </section>
   <section class="panel" aria-labelledby="hSport">
-    <h2 id="hSport">Statistik Sport</h2>
+    <h2 id="hSport">Statistik Training</h2>
     <div class="stat-block sport-stat">
-      <div class="label" id="sportLbl">Sport</div>
+      <div class="label" id="sportLbl">Training</div>
       <div class="bars" id="sportBars"></div>
     </div>
   </section>
@@ -453,7 +453,7 @@ dialog::backdrop{background:rgba(10,18,22,.45)}
       </div>
     </div>
     <div class="field"><span class="label" id="fBerLbl">Bereich</span>
-      <div class="art-seg" role="radiogroup" aria-labelledby="fBerLbl" id="fBer"><button type="button" data-b="learn" aria-pressed="true">Lernen</button><button type="button" data-b="sport" aria-pressed="false">Sport</button></div></div>
+      <div class="art-seg" role="radiogroup" aria-labelledby="fBerLbl" id="fBer"><button type="button" data-b="learn" aria-pressed="true">Lernen</button><button type="button" data-b="sport" aria-pressed="false">Training</button></div></div>
     <div class="fields">
       <div class="field"><label class="label" for="fDate">Datum</label><input type="date" id="fDate" required></div>
       <div class="field"><label class="label" for="fFach" id="fFachLbl">Fach</label><select id="fFach"></select></div>
