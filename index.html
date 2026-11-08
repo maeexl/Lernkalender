@@ -271,6 +271,7 @@ a.btn{display:inline-block;text-decoration:none;color:inherit}
 .sport-dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--c-sport)}
 .sport-dots i.on{background:var(--c-sport)}
 .legend .sep{width:1px;height:14px;background:var(--line)}
+.legend i.leg-sport{width:16px;height:12px;border-radius:2px;background:color-mix(in srgb,var(--c-sport) 22%,transparent);border-left:3px solid var(--c-sport)}
 .sport-stat{max-width:760px}
 .sport-row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 8.5em;gap:8px;align-items:center;font-size:.85rem}
 .sport-row .num{text-align:right;font-family:var(--f-mono);font-size:.8rem}
@@ -721,7 +722,7 @@ function fillSelects(){
   $('fFach').innerHTML=opts;renderChips();
   $('fArt').innerHTML=ARTEN.map(a=>`<option value="${a.k}">${a.n}</option>`).join('');
   renderArt();
-  $('legend').innerHTML=FAECHER.map(f=>`<span><i style="--fc:${fc(f.k)}"></i>${esc(f.n)}</span>`).join('')+`<span class="sep"></span><span><i style="--fc:var(--c-sport)"></i>Sport (${SPORT.map(x=>x.a).join(' · ')})</span>`+
+  $('legend').innerHTML=FAECHER.map(f=>`<span><i style="--fc:${fc(f.k)}"></i>${esc(f.n)}</span>`).join('')+`<span class="sep"></span><span><i class="leg-sport"></i>Training</span>`+
     `<span><i class="dash"></i>geplant</span>`;
 }
 
